@@ -1,0 +1,6 @@
+Iris dataset
+============
+
+- classify the last column "species"
+
+- shuffled and splitted by bin/randomize.sh
