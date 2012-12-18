@@ -44,8 +44,9 @@ RF_CLASS=weka.classifiers.trees.RandomForest
 # -I 5 - number of trees to build
 # -print - print individual trees on output
 # -c     - index of class attribute 
-WEKA_JVM_PARAMS="-Xmx2048M"
-RF_PARAMS="-K ${RF_WEKA_MTRY-0} -S $RF_SEED -I $RF_NTREES -c $RF_PRED_CLASS_IDX -num-slots 1 -k -i -D"
+WEKA_JVM_PARAMS="-Xmx$RF_WEKA_JVM_XMX"
+RF_NTREES=10
+RF_PARAMS="-K ${RF_WEKA_MTRY-0} -S $RF_SEED -I $RF_NTREES -c $RF_PRED_CLASS_IDX -num-slots 1 -k -i"
 if [ $RF_PRINT_TREES == "TRUE" ]; then
     RF_PARAMS="$RF_PARAMS -print"
 fi

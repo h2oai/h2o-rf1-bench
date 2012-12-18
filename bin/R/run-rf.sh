@@ -49,8 +49,8 @@ $(cat rf.r)
 EOF
 
 if [ $RF_PRINT_TREES == "TRUE" ]; then
-#$Q $TREEPARSER -f $RF_OUTPUT_TREES > "$RF_OUTPUT_TREES.tmp"
-#mv "$RF_OUTPUT_TREES.tmp" "$RF_OUTPUT_TREES"
+$Q $TREEPARSER -f $RF_OUTPUT_TREES > "$RF_OUTPUT_TREES.tmp"
+mv "$RF_OUTPUT_TREES.tmp" "$RF_OUTPUT_TREES"
 fi
 cat $RF_OUTPUT_ANALYSIS
 echo "Analysis is stored in:$RF_OUTPUT_ANALYSIS"
