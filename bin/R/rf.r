@@ -88,7 +88,7 @@ cat("\n")
 cat(sprintf("Depths summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(depths), mean(depths), max(depths)))
 cat(sprintf("Leaves summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(leaves), mean(leaves), max(leaves))) 
 
-result <- c(rf.ntrees, rf.r.mtry, nrow(train.ds), train.ds.oob, min(leaves), mean(leaves), max(leaves), min(depths), mean(depths), max(depths), nrow(test.ds), overall.class.err)
+result <- c(rf.ntrees, rf.r.mtry, min(leaves), mean(leaves), max(leaves), min(depths), mean(depths), max(depths), nrow(train.ds), train.ds.oob, nrow(test.ds), overall.class.err)
 
 cat(result,sep=',')
 cat("\n")
