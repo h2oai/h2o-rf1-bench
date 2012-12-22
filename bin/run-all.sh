@@ -28,15 +28,17 @@ fi
 
 RF_DS_NAME="$1"
 PREFIX="$2"
+shift
+shift
 
 #echo "*** Running R...."
-R_OUTPUT_FILE="$(cd $R_DIR; "./$RUNNER" $RF_DS_NAME | tail -n 1 | sed -e 's/.*://' )"
+R_OUTPUT_FILE="$(cd $R_DIR; "./$RUNNER" $RF_DS_NAME "$@" | tail -n 1 | sed -e 's/.*://' )"
 
 #echo "*** Running weka...."
-WEKA_OUTPUT_FILE="$(cd $WEKA_DIR; "./$RUNNER" $RF_DS_NAME | tail -n 1 | sed -e 's/.*://')"
+WEKA_OUTPUT_FILE="$(cd $WEKA_DIR; "./$RUNNER" $RF_DS_NAME "$@" | tail -n 1 | sed -e 's/.*://')"
 
 #echo "*** Running H2O...." >2
-H2O_OUTPUT_FILE="$(cd $H2O_DIR; "./$RUNNER" $RF_DS_NAME | tail -n 1 | sed -e 's/.*://')"
+H2O_OUTPUT_FILE="$(cd $H2O_DIR; "./$RUNNER" $RF_DS_NAME "$@" | tail -n 1 | sed -e 's/.*://')"
 
 cat <<EOF
 ${PREFIX}R,$(tail -n 1 $R_OUTPUT_FILE)

@@ -9,15 +9,16 @@ EXT=""
 source "$RF_UTILS"
 # ### End of Configuration ###
 
-if [ ! $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
     cmd_help
    exit -1
 fi
 
 RF_DS_NAME="$1"
 
+shift 
 # Parse configuraiton
-parse_conf
+parse_conf "$@"
 
 # Check if datasets exist
 check_datasets
@@ -32,12 +33,13 @@ print_conf
 CLASSPATH=h2o.jar
 H2O_MAIN_CLASS=init.Boot
 
-#RF_H2O_JVM_ASSERTIONS=
+RF_H2O_JVM_ASSERTIONS=
 JVM_PARAMS="${RF_H2O_JVM_ASSERTIONS} -Xmx${RF_H2O_JVM_XMX} -cp ${CLASSPATH} ${H2O_MAIN_CLASS}"
-RF_PARAMS="-mainClass hex.rf.RandomForest -file $RF_TRAIN_DS -validationFile $RF_TEST_DS -ntrees $RF_NTREES -classcol $RF_PRED_CLASS_IDX_H2O ${RF_H2O_STAT_TYPE:+"-statType $RF_H2O_STAT_TYPE"} -seed $RF_SEED ${RF_H2O_BIN_LIMIT:+"-binLimit $RF_H2O_BIN_LIMIT"} ${RF_SAMPLING_RATIO:+"-sample $RF_SAMPLING_RATIO"}"
+RF_PARAMS="-mainClass hex.rf.RandomForest -file $RF_TRAIN_DS -validationFile $RF_TEST_DS -ntrees $RF_NTREES -classcol $RF_PRED_CLASS_IDX_H2O ${RF_H2O_STAT_TYPE:+"-statType $RF_H2O_STAT_TYPE"} -seed $RF_SEED ${RF_H2O_BIN_LIMIT:+"-binLimit $RF_H2O_BIN_LIMIT"} ${RF_SAMPLING_RATIO:+"-sample $RF_SAMPLING_RATIO"} ${RF_H2O_RNG:+"-rng $RF_H2O_RNG"} -parallel 0"
 
-echo "H2O cmd parameters: $RF_PARAMS"
-echo "JVM cmd parameters: $JVM_PARAMS"
+echo "H2O cmd parameters: $RF_PARAMS" | tee -a "$RF_OUTPUT_RUNCONFG"
+echo "JVM cmd parameters: $JVM_PARAMS"| tee -a "$RF_OUTPUT_RUNCONFG"
+
 
 #Q=echo
 $Q rm -rf /tmp/ice5*

@@ -10,15 +10,16 @@ EXT=""
 source "$RF_UTILS"
 # ### End of Configuration ###
 
-if [ ! $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
     cmd_help
    exit -1
 fi
 
 RF_DS_NAME="$1"
+shift
 
 # Parse configuraiton
-parse_conf
+parse_conf "$@"
 
 # Check if datasets exist
 check_datasets

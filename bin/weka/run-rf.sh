@@ -9,15 +9,16 @@ EXT=".arff"
 source "$RF_UTILS"
 # ### End of Configuration ###
 
-if [ ! $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
     cmd_help
    exit -1
 fi
 
 RF_DS_NAME="$1"
+shift
 
 # Parse configuraiton
-parse_conf
+parse_conf "$@"
 
 # Check if datasets exist
 check_datasets
@@ -45,11 +46,13 @@ RF_CLASS=weka.classifiers.trees.RandomForest
 # -print - print individual trees on output
 # -c     - index of class attribute 
 WEKA_JVM_PARAMS="-Xmx$RF_WEKA_JVM_XMX"
-RF_NTREES=10
 RF_PARAMS="-K ${RF_WEKA_MTRY-0} -S $RF_SEED -I $RF_NTREES -c $RF_PRED_CLASS_IDX -num-slots 1 -k -i"
 if [ $RF_PRINT_TREES == "TRUE" ]; then
     RF_PARAMS="$RF_PARAMS -print"
 fi
+
+echo "Weka JVM parameters: $WEKA_JVM_PARAMS" | tee -a "${RF_OUTPUT_RUNCONFG}"
+echo "Weka  RF parameters: $RF_PARAMS" | tee -a "${RF_OUTPUT_RUNCONFG}"
 
 # Prepare datasets
 #$Q java -cp $CLASSPATH weka.core.converters.CSVLoader $TRAIN_DATASET > $TRAIN_DATASET_ARFF
