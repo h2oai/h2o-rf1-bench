@@ -90,3 +90,15 @@ $(set -o posix; set | grep "^RF_" | sed -e "s/^/        /")
 EOF
 cat "$RF_OUTPUT_RUNCONFG"
 }
+
+function print_header() {
+local HEADER="Trees,Features,LeavesMin,LeavesMean,LeavesMax,DepthMin,DepthMean,DepthMax,TrainSize,OOB,TestSize,ClassError"
+echo $HEADER
+}
+
+function print_stats() {
+    local OUTPUT_FILE=$1
+    echo 
+    (print_header; tail -n 1 "$OUTPUT_FILE" ) | column -s, -t
+}
+

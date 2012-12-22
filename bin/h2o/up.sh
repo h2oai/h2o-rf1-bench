@@ -5,7 +5,7 @@
 
 H2O_HOME=/home/michal/prg/projects/h20/repos/h2o-at-bitbucker
 H2OJAR=$H2O_HOME/build/h2o.jar
-cd "$H2O_HOME" && ./build.sh build
+( cd "$H2O_HOME" && ./build.sh build )
 
 echo "Doing: cp $H2OJAR ."
 if [ -f "$H2OJAR" ]; then

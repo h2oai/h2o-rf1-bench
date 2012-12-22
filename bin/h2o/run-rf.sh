@@ -46,3 +46,5 @@ $Q rm -rf /tmp/ice5*
 $Q java $JVM_PARAMS $RF_PARAMS | tee ${RF_OUTPUT_ANALYSIS}.tmp | grep -v "^\[h2o\]" | grep -v "\[RF\]" > $RF_OUTPUT_ANALYSIS
 cat $RF_OUTPUT_ANALYSIS
 echo "Analysis is stored in:$RF_OUTPUT_ANALYSIS"
+print_stats "$RF_OUTPUT_ANALYSIS"
+

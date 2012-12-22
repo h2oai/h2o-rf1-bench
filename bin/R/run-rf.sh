@@ -55,3 +55,5 @@ mv "$RF_OUTPUT_TREES.tmp" "$RF_OUTPUT_TREES"
 fi
 cat $RF_OUTPUT_ANALYSIS
 echo "Analysis is stored in:$RF_OUTPUT_ANALYSIS"
+print_stats "$RF_OUTPUT_ANALYSIS"
+

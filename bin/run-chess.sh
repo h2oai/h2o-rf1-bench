@@ -47,7 +47,7 @@ if [ $PRUNE_OUTPUT_DIR == "true" ]; then
     rm $OUTPUT_DIR/* 2> /dev/null
 fi
 
-HEADER="Width,Height,Points,Tool,Trees,Features,TrainSize,OOB,LeavesMin,LeavesMean,LeavesMax,DepthMin,DepthMean,DepthMax,TestSize,ClassError"
+HEADER="Width,Height,Points,Tool,Trees,Features,LeavesMin,LeavesMean,LeavesMax,DepthMin,DepthMean,DepthMax,TrainSize,OOB,TestSize,ClassError"
 echo $HEADER > $OUTPUT
 
 for N in $(seq $START $INCR $STOP); do

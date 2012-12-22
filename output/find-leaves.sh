@@ -3,7 +3,7 @@
 # @Last Change: 24-Dez-2004.
 # @Revision:    0.0
 
-grep -e "Tree leaves" -e "Leaves" *.txt | sort | uniq | sed -e "s/-analysis-\(.*\)\.txt:/ \1: /"
+grep -e "Avg tree leaves" -e "Leaves summary" *.txt | sort | uniq | sed -e "s/-analysis-\(.*\)\.txt:/ \1: /"
 
 
 # vi: 
