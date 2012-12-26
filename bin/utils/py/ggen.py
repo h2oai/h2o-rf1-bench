@@ -6,7 +6,7 @@ def getSimpleRGraph(dataset_file, pdf_file):
 
 pdf("%s")
 
-plot(train$x, train$y, col=train$color)
+plot(train$x, train$y, col=train$color, xlab='x', ylab='y')
 box()
 dev.off()
 ''' % (dataset_file, pdf_file)
