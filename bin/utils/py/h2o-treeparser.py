@@ -36,8 +36,13 @@ def parseTree(treeStr):
     else:
         (splitExp, kids) = treeStr.split(None,1)
         
-        (splitVar,splitVal) = splitExp.split("<=")
-        node = stree.TreeNode(split_var=splitVar, split_val=splitVal)
+        if "<=" in splitExp:
+            (splitVar,splitVal) = splitExp.split("<=")
+            node = stree.TreeNode(split_var=splitVar, split_val=splitVal)
+        else:
+            (splitVar,splitVal) = splitExp.split("==")
+            node = stree.ExclusiveTreeNode(split_var=splitVar, split_val=splitVal)
+
         (l,r) = splitKids(kids.lstrip('(').rstrip(')'))
         node.setL( parseTree(l) )
         node.setR( parseTree(r) )
