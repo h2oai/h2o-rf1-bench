@@ -26,7 +26,7 @@ echo "Parsing trees..."
 grep "Tree :" $OUT | head -n 2| while read tree; do
     tree_fname="tree_$(get_tree_filename $cnt).csv"
     echo -ne "[${cnt}] "
-    echo "$tree" | sed -e "s/A/\nA/g" | grep "<" | sed -e "s/\([^ ]*\) .*/\1/" -e "s/@/,/" | sed -e "s/\(^[^<]*\)</\1,\1</" | sort > "${tree_fname}"
+    echo "$tree" | sed -e "s/A/\nA/g" | grep -e "<=" -e "==" | sed -e "s/\([^ ]*\) .*/\1/" -e "s/@/,/" | sed -e "s/\(^[^<]*\)</\1,\1</" | sort > "${tree_fname}"
     cnt=`expr $cnt + 1`
 done
 
