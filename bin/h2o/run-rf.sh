@@ -43,7 +43,7 @@ echo "JVM cmd parameters: $JVM_PARAMS"| tee -a "$RF_OUTPUT_RUNCONFG"
 
 #Q=echo
 $Q rm -rf /tmp/ice5*
-$Q java $JVM_PARAMS $RF_PARAMS | tee ${RF_OUTPUT_ANALYSIS}.tmp | grep -v "^\[h2o\]" | grep -v "\[RF\]" | tee $RF_OUTPUT_ANALYSIS
+$Q java $JVM_PARAMS $RF_PARAMS | tee ${RF_OUTPUT_ANALYSIS}.tmp | grep -v "^\[h2o\]" | grep -v "\[RF\]" | tee $RF_OUTPUT_ANALYSIS | cut -b -100
 h2o_get_run_stats "$RF_OUTPUT_ANALYSIS" >> "$RF_OUTPUT_ANALYSIS"
 cat "$RF_OUTPUT_ANALYSIS"
 echo "Analysis is stored in:$RF_OUTPUT_ANALYSIS"
