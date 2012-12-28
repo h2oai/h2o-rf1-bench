@@ -6,7 +6,12 @@
 H2O_HOME=/home/michal/prg/projects/h20/repos/h2o-at-bitbucker
 H2OJAR=$H2O_HOME/build/h2o.jar
 echo "Building H2O in ${H2O_HOME}..."
+if [ "$1" == "skipgit" ]; then
+echo "Skipping git pull..."
+( cd "$H2O_HOME"; ./build.sh build )
+else
 ( cd "$H2O_HOME"; git pull && ./build.sh build )
+fi
 
 echo "Doing: cp $H2OJAR ."
 if [ -f "$H2OJAR" ]; then
