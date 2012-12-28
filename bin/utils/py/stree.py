@@ -24,14 +24,6 @@ class Tree(object):
         return self._rootNode.leaves()
 
 
-class ExclusiveTreeNode(TreeNode):
-
-    def __init__(self, split_var=None, split_val=None, l=None, r=None):
-        super(ExclusiveNode, self).__init__(split_var, split_val, l, r)
-    
-    def pp(self, prefix='',signL='==',signR='!='):
-        super(ExclusiveNode, self).pp(prefix,signL,signR)
-
 class TreeNode(object):
     def __init__(self, split_var=None, split_val=None, l=None, r=None):
         self._split_var = split_var
@@ -72,6 +64,15 @@ class TreeNode(object):
 
     def depth(self):
         return max(self._l.depth(), self._r.depth()) + 1
+
+class ExclusiveTreeNode(TreeNode):
+
+    def __init__(self, split_var=None, split_val=None, l=None, r=None):
+        super(ExclusiveNode, self).__init__(split_var, split_val, l, r)
+    
+    def pp(self, prefix='',signL='==',signR='!='):
+        super(ExclusiveNode, self).pp(prefix,signL,signR)
+
 
 class TreeLeaf(TreeNode):
     def __init__(self, prediction):
