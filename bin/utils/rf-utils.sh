@@ -102,3 +102,27 @@ function print_stats() {
     (print_header; tail -n 1 "$OUTPUT_FILE" ) | column -s, -t
 }
 
+function h2o_get_run_stats() {
+    local f="$1"
+
+    ntrees=$(tail -n 100 "$f" | grep "Number of trees:" | uniq | sed -e "s/[^:]*: \([0-9]*\).*/\1/")
+    mtry=$(tail -n 100 "$f" | grep "at each split:" | uniq | sed -e "s/[^:]*: \([0-9]*\).*/\1/")
+
+    oobee=$(tail -n 100 "$f" | grep "err. rate:" | head -n 1 | sed -e "s/[^(]*(\([^)]*\))/\1/")
+    classerr=$(tail -n 100 "$f" | grep "err. rate:" | tail -n 1 | sed -e "s/[^(]*(\([^)]*\))/\1/")
+    
+    tree_stats=$(tail -n 100 "$f" | grep "Avg tree leaves" | uniq | sed -e "s/[^:]*: \(.*\)/\1/" | sed -e "s/\//,/g" -e "s/ //g")
+    depth_stats=$(tail -n 100 "$f" | grep "Avg tree depth" | uniq | sed -e "s/[^:]*: \(.*\)/\1/" | sed -e "s/\//,/g" -e "s/ //g")
+
+    train_size=$(tail -n 100 "$f" | grep "Validated on" | head -n 1 | sed -e "s/[^:]*: \([0-9]*\)$/\1/")
+    test_size=$(tail -n 100 "$f" | grep "Validated on" | tail -n 1 | sed -e "s/[^:]*: \([0-9]*\)$/\1/")
+#    echo "ntrees=$ntrees"
+#    echo "mtry=$mtry"
+#    echo "oobee=$oobee"
+#    echo "classerr=$classerr"
+#    echo "tree_stats=$tree_stats"
+#    echo "depth_stats=$depth_stats"
+#    echo "train_size=$train_size"
+#    echo "test_size=$test_size"
+    echo "$ntrees,$mtry,$tree_stats,$depth_stats,$train_size,$oobee,$test_size,$classerr"
+}
