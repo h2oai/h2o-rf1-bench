@@ -11,7 +11,7 @@ class Tree(object):
     def pp(self,prefix=''):
         print("Random Tree")
         print("===========\n")
-        self._rootNode.pp(prefix,self._signL,self._signR)
+        self._rootNode.pp(prefix)
         print 
         print("Tree depth:  %s" % self.depth())
         print("Tree leaves: %s" % self.leaves())
@@ -43,18 +43,21 @@ class TreeNode(object):
     def getR(self):
         return self._r
 
-    def pp(self, prefix='',signL='<',signR='>='):
+    def pp(self, prefix):
+	pass
+
+    def _pp(self, prefix, signL, signR):
         if self._l.is_leaf():
-            print("%s%s %s %s : %s" % (prefix,self._split_var, signL, self._split_val, self._l.pred() ))
+            print("%s%s %s %s : %s" % (prefix,self._split_var, signL, self._split_val, self._l.to_string() ))
         else:
             print("%s%s %s %s" % (prefix,self._split_var, signL, self._split_val))
-            self._l.pp(prefix+'|   ',signL,signR)
+            self._l.pp(prefix+'|   ')
 
         if self._r.is_leaf():
-            print("%s%s %s %s : %s" % (prefix,self._split_var, signR, self._split_val, self._r.pred() ))
+            print("%s%s %s %s : %s" % (prefix,self._split_var, signR, self._split_val, self._r.to_string() ))
         else:
             print("%s%s %s %s" % (prefix,self._split_var, signR, self._split_val))
-            self._r.pp(prefix+'|   ',signL,signR)
+            self._r.pp(prefix+'|   ')
 
     def is_leaf(self):
         return False
@@ -65,20 +68,29 @@ class TreeNode(object):
     def depth(self):
         return max(self._l.depth(), self._r.depth()) + 1
 
+class SplitTreeNode(TreeNode):
+    def __init__(self, split_var=None, split_val=None, l=None, r=None):
+        super(SplitTreeNode, self).__init__(split_var, split_val, l, r)
+    
+    def pp(self, prefix):
+	self._pp(prefix, "<=", ">")
+
+
 class ExclusiveTreeNode(TreeNode):
 
     def __init__(self, split_var=None, split_val=None, l=None, r=None):
         super(ExclusiveTreeNode, self).__init__(split_var, split_val, l, r)
     
-    def pp(self, prefix='',signL='==',signR='!='):
-        super(ExclusiveTreeNode, self).pp(prefix,signL,signR)
+    def pp(self, prefix):
+	self._pp(prefix, "==", "!=")
 
 
 class TreeLeaf(TreeNode):
-    def __init__(self, prediction):
+    def __init__(self, prediction, rows="NA"):
         self._prediction = prediction
         self._l = None
         self._r = None
+	self._rows = rows
 
     def is_leaf(self):
         return True
@@ -86,8 +98,15 @@ class TreeLeaf(TreeNode):
     def pred(self):
         return self._prediction
 
+    def rows(self):
+        return self._rows
+
     def leaves(self):
         return 1
 
     def depth(self):
         return 0
+
+    def to_string(self):
+	return "%s [rows: %s]" % (self.pred(), self.rows())
+

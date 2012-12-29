@@ -32,13 +32,15 @@ def parseTree(treeStr):
     node = None
     
     if treeStr.startswith('['):
-        node = stree.TreeLeaf(treeStr.lstrip('[').rstrip(']'))
+	pred  = treeStr.split(']')[0].lstrip('[')
+	rows = treeStr.split('{')[1].rstrip('}')
+        node = stree.TreeLeaf(pred,rows)
     else:
         (splitExp, kids) = treeStr.split(None,1)
         
         if "<=" in splitExp:
             (splitVar,splitVal) = splitExp.split("<=")
-            node = stree.TreeNode(split_var=splitVar, split_val=splitVal)
+            node = stree.SplitTreeNode(split_var=splitVar, split_val=splitVal)
         else:
             (splitVar,splitVal) = splitExp.split("==")
             node = stree.ExclusiveTreeNode(split_var=splitVar, split_val=splitVal)
