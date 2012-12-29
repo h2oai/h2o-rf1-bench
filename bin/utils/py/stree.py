@@ -68,10 +68,10 @@ class TreeNode(object):
 class ExclusiveTreeNode(TreeNode):
 
     def __init__(self, split_var=None, split_val=None, l=None, r=None):
-        super(ExclusiveNode, self).__init__(split_var, split_val, l, r)
+        super(ExclusiveTreeNode, self).__init__(split_var, split_val, l, r)
     
     def pp(self, prefix='',signL='==',signR='!='):
-        super(ExclusiveNode, self).pp(prefix,signL,signR)
+        super(ExclusiveTreeNode, self).pp(prefix,signL,signR)
 
 
 class TreeLeaf(TreeNode):
