@@ -34,7 +34,7 @@ print_conf
 
 R -q --no-save <<EOF
 rf.ds.name   <- "$RF_DS_NAME"
-rf.seed      <- $RF_SEED
+${RF_SEED:+"rf.seed      <- $RF_SEED"}
 rf.train.dsf <- "$RF_TRAIN_DS"
 rf.test.dsf  <- "$RF_TEST_DS"
 rf.ntrees    <- $RF_NTREES
