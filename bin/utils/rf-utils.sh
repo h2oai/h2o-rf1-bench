@@ -57,10 +57,12 @@ function parse_conf() {
         esac
     done
 
+    RF_ADDITIONAL_PARAMS="$@"
     echo "Cmd line options:"
     echo "  LOCAL_CONF=$LOCAL_CONF"
     echo "  RF_H2O_RNG=$RF_H2O_RNG"
     echo "  RF_SAMPLING_RATIO=$RF_SAMPLING_RATIO"
+    echo "  RF_ADDITIONAL_PARAMS=$RF_ADDITIONAL_PARAMS"
     
     if [ -f "$LOCAL_CONF" ]; then
         source "$LOCAL_CONF"
