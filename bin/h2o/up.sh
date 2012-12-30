@@ -2,6 +2,7 @@
 # up.sh -- created 2012-12-01, <+NAME+>
 # @Last Change: 24-Dez-2004.
 # @Revision:    0.0
+set -e
 
 H2O_HOME=/home/michal/prg/projects/h20/repos/h2o-at-bitbucker
 H2OJAR=$H2O_HOME/build/h2o.jar
