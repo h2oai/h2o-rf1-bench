@@ -7,17 +7,28 @@ function cmd_help() {
     echo "   Run RF with help of $TOOL"
     echo "   <dataset>       : name of existing dataset"
     echo "   -conf <rf.conf> : load also given RF config file (override all other configurations)" 
+    echo
+}
+
+function list_datasets() {
+local dir="$1"
+cat <<EOF
+Available datasets:
+$(ls -1 "$dir" | sed -s 's/^/  /')
+EOF
 }
 
 function check_datasets() {
     if [ ! -f $RF_TRAIN_DS ]; then
         echo "Training dataset $RF_TRAIN_DS does not exist!"
         cmd_help
+        list_datasets "$RF_DSS_DIR"
         exit -1
     fi
     if [ ! -f $RF_TEST_DS ]; then
         echo "Testing dataset $RF_TEST_DS does not exist!"
         cmd_help
+        list_datasets "$RF_DSS_DIR"
         exit -1
     fi
 }
@@ -53,6 +64,10 @@ function parse_conf() {
                 shift
                 RF_SAMPLING_RATIO="$1"
                 shift
+                ;;
+            -dss)
+                list_datasets "$RF_DSS_DIR"
+                exit 
                 ;;
         esac
     done
