@@ -29,12 +29,14 @@ print_conf
 
 #
 # R-specific part
-# 
+#
+RF_SEED=42
 
 
+START_TIME=$(date +%s)
 R -q --no-save <<EOF
 rf.ds.name   <- "$RF_DS_NAME"
-${RF_SEED:+"rf.seed      <- $RF_SEED"}
+${RF_R_SEED:+"rf.seed      <- $RF_R_SEED"}
 rf.train.dsf <- "$RF_TRAIN_DS"
 rf.test.dsf  <- "$RF_TEST_DS"
 rf.ntrees    <- $RF_NTREES
@@ -48,12 +50,15 @@ rf.print.trees     <- $RF_PRINT_TREES
 ${RF_SAMPLING_RATIO:+"rf.sampling.ratio  <- $RF_SAMPLING_RATIO"}
 $(cat rf.r)
 EOF
+END_TIME=$(date +%s)
 
 if [ $RF_PRINT_TREES == "TRUE" ]; then
 $Q $TREEPARSER -f $RF_OUTPUT_TREES > "$RF_OUTPUT_TREES.tmp"
 mv "$RF_OUTPUT_TREES.tmp" "$RF_OUTPUT_TREES"
 fi
 cat $RF_OUTPUT_ANALYSIS
+
+echo "RF execution took: $(compute_time_diff START_TIME END_TIME)"
 echo "Analysis is stored in:$RF_OUTPUT_ANALYSIS"
 print_stats "$RF_OUTPUT_ANALYSIS"
 

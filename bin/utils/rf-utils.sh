@@ -89,6 +89,12 @@ function parse_conf() {
     # ### End of configuraiton ###
 }
 
+function compute_time_diff() {
+local start=$1
+local end=$2
+echo "$((end - start)) seconds"
+}
+
 function print_conf() {
 #cat | tee "$RF_OUTPUT_RUNCONFG" <<EOF
 cat > "$RF_OUTPUT_RUNCONFG" <<EOF
