@@ -34,12 +34,12 @@ class ChessGen(ssdgen.SSDGen):
             for col in range (0, self._ncols):
                 color = self._COLORS[ (row+col) % 2 ]
                 for i in range(0, self._pointsPerCell):
-                    point = self.__genPoint(col, row, color)
+                    point = self._genPoint(col, row, color)
                     output.append(point)
 
         return output
     
-    def __genPoint(self, x, y, color):
+    def _genPoint(self, x, y, color):
          return (x+self._rand.random(),y+self._rand.random(), color)
 
     def genGraph(self, f, train_ds_fname, test_ds_fname):
