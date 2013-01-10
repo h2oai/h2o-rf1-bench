@@ -17,13 +17,13 @@ def parseFile(fname):
             if line.lstrip() == "":
                 continue
 
-            if line.lstrip().startswith('Tree :'):
-                tree = parseTreeLine(line.replace('Tree :', ''))
-                tree.pp('')
+            tree = parseTreeLine(line)
+            tree.pp('')
 
 def parseTreeLine(line):
-    (num, depth, leaves, treeStr) = line.strip().split(None,3)
-    tree = stree.Tree(num, parseTree(treeStr),'<=','>')
+    #(num, depth, leaves, treeStr) = line.strip().split(None,3)
+    treeStr = line
+    tree = stree.Tree(0, parseTree(treeStr),'<=','>')
 
     return tree
 
@@ -33,7 +33,7 @@ def parseTree(treeStr):
     
     if treeStr.startswith('['):
 	pred  = treeStr.split(']')[0].lstrip('[')
-	rows = treeStr.split('{')[1].rstrip('}')
+	rows = treeStr.split('{')[1].split('}')[0]
         node = stree.TreeLeaf(pred,rows)
     else:
         (splitExp, kids) = treeStr.split(None,1)
