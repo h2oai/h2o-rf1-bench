@@ -29,6 +29,11 @@ def getTrainSize(ratio, total):
     (train, test) = getTestTrainSizes(ratio, total)
     return train
 
+def enum(**enums):
+        return type('Enum', (), enums)
+
+TestType = enum(TRAIN=0, TEST=1)
+
 #
 # Simple Synthesised Datasets Generator
 #
@@ -42,23 +47,34 @@ class SSDGen(object):
 
         self._rand      = random.SystemRandom(seed)
 
-    def generate(self):
-        output = self.genPoints()
+    def generateTrainDS(self, size):
+        output = self.genPoints(TestType.TRAIN, size)
         random.shuffle(output)
+        
+        return output
 
-        self.__writeDataset(output)
+    def generateTestDS(self, size):
+        output = self.genPoints(TestType.TEST, size)
+        random.shuffle(output)
+        
+        return output
 
-    def genPoints(self):
+    def generate(self):
+        trainDS = self.generateTrainDS(self._trainSize)
+        testDS  = self.generateTestDS(self._testSize)
+
+        self._writeDatasets(trainDS, testDS)
+
+    def genPoints(self, test_target, cnt):
         output = []
-        cnt    = self._total
         
         # Data generation
         for i in range(0, cnt):
-            output.append(self.genPoint(i))
+            output.append(self.genPoint(test_target, i, cnt))
 
         return output
 
-    def __writeDataset(self, output):
+    def _writeDatasets(self, trainDS, testDS):
         # setup directories
         ds_name         = self.genDsName()
         ds_dirname      = "%s/%s" % (self._outputDir,ds_name)
@@ -76,44 +92,41 @@ class SSDGen(object):
         
         print "======================"
         print "Generated points = %d" % self._total
-        print "     Train items = %d" % self._trainSize
-        print "      Test items = %d" % self._testSize
+        print "     Train items = %d" % len(trainDS)
+        print "      Test items = %d" % len(testDS)
         print "     Dataset dir = %s" % ds_dirname
         print "          Header = %s" % str(ds_header)
+        self.printInfo()
         print "======================"
 
         # write files
         trainfname = "%s/%s" % (ds_R_dirname,'train.csv')
-        with open(trainfname, 'w') as f:
-            self.__writeHeader(f, ds_header)
-            for i in range(0, self._trainSize):
-                point = output.pop()
-                self.__writePoint(f,point)
+        self._writeDataset(trainfname, trainDS, ds_header)
 
         testfname = "%s/%s" % (ds_R_dirname,'test.csv')
-        with open(testfname, 'w') as f:
-            self.__writeHeader(f, ds_header)
-            for i in range(0, self._testSize):
-                point = output.pop()
-                self.__writePoint(f,point)
-            # write some point where test data set is empty
-
+        self._writeDataset(testfname, testDS, ds_header)
 
         # write dataset configuration
-        self.__writeRfConf(ds_dirname)
+        self._writeRfConf(ds_dirname)
 
         # write dataset visualization script
-        self.__writeRGraph(ds_dirname, 'R/train.csv', 'R/test.csv')
+        self._writeRGraph(ds_dirname, 'R/train.csv', 'R/test.csv')
 
-    def __writePoint(self, f, point):
+    def _writeDataset(self, fname, ds, ds_header):
+        with open(fname, 'w') as f:
+            self._writeHeader(f, ds_header)
+            for point in ds:
+                self._writePoint(f,point)
+
+    def _writePoint(self, f, point):
         f.write(','.join(map(str,point)))
         f.write('\n')
     
-    def __writeHeader(self, f, header):
+    def _writeHeader(self, f, header):
         f.write(','.join(map(str,header)))
         f.write('\n')
 
-    def __writeRfConf(self, ds_dirname):
+    def _writeRfConf(self, ds_dirname):
         rfconfname = "%s/%s" % (ds_dirname, "rf.conf")
         header     = self.genHeader()
         mtry       = self.getMtry(header)
@@ -125,10 +138,11 @@ class SSDGen(object):
             f.write("RF_R_MTRY=%d\n"              % ( mtry ) )
             f.write("RF_WEKA_MTRY=%d\n"           % ( mtry ) )
 
-    def __writeRGraph(self, ds_dirname, train_ds_fname, test_ds_fname):
+    def _writeRGraph(self, ds_dirname, train_ds_fname, test_ds_fname):
         gfname = "%s/%s" % (ds_dirname, "graph.r")
         with open(gfname, 'w') as f:
-            self.genGraph(f, train_ds_fname, test_ds_fname)
+            self.genGraph(f, train_ds_fname)
+            self.genGraph(f, test_ds_fname)
 
     # zero-based class column
     def getClassColumnIdx(self, header):
@@ -151,15 +165,18 @@ class SSDGen(object):
     def genDsName(self):
         pass
 
-    def genPoint(self, idx):
+    def genPoint(self, test_target, idx):
         pass
 
     def genHeader(self):
         pass
 
-    def genGraph(self, f, train_ds_fname, test_ds_fname):
+    def genGraph(self, f, ds_fname):
         pass
-    
+ 
+    def printInfo(self):
+        pass
+
     #
     # Static methods
     #
