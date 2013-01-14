@@ -19,10 +19,10 @@ class ChessGenNoise(chess_gen.ChessGen):
         return 'chess_%sx%sx%s_noise%s' % (self._ncols, self._nrows, self._pointsPerCell, self._noiseCol)
 
     def genHeader(self):
-        return ('x','y','color','n1')
+        return ('x','y','n1','color')
 
     def _genPoint(self, x, y, color):
-         return (x+self._rand.random(),y+self._rand.random(), color, self._rand.random())
+         return (x+self._rand.random(),y+self._rand.random(), self._rand.random(), color)
     
     @classmethod
     def getArgParser(clazz, description):
