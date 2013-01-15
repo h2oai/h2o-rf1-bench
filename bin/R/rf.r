@@ -37,10 +37,12 @@ if (exists('rf.sampling.ratio')) {
     params <- c(params, sampsize=sr)
 }
 
+starttime<-Sys.time()
 train.ds.rf <- do.call(randomForest,params)
+endtime<-Sys.time()
 
 print(train.ds.rf)
-train.ds.oob <- mean(train.ds.rf$err.rate[,"OOB"])
+train.ds.oob <- mean(train.ds.rf$confusion)
 cat("\nSize of train dataset: ", nrow(train.ds))
 
 cat("\n======== Test data ========\n\n")
@@ -69,6 +71,7 @@ cat("                     Size of test dataset: ", nrow(test.ds), "\n\n")
 cat("Confusion matrix:\n")
 cbind(t,class.error)
 
+cat(sprintf("\n\nRun time: %.5f sec\n\n", endtime - starttime))
 #pt = prop.table(t,1)
 #print(pt)
 
@@ -87,6 +90,7 @@ cat("\n")
 #cat(sprintf(" Nodes summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(nodes), mean(nodes),  max(nodes)))
 cat(sprintf("Depths summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(depths), mean(depths), max(depths)))
 cat(sprintf("Leaves summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(leaves), mean(leaves), max(leaves))) 
+cat(sprintf("Run time: %.5f sec\n", endtime - starttime))
 
 result <- c(rf.ntrees, rf.r.mtry, min(leaves), mean(leaves), max(leaves), min(depths), mean(depths), max(depths), nrow(train.ds), train.ds.oob, nrow(test.ds), overall.class.err)
 
