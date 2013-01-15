@@ -131,10 +131,10 @@ class SSDGen(object):
         header     = self.genHeader()
         mtry       = self.getMtry(header)
         with open(rfconfname, 'w') as f:
-            f.write("RF_PRED_FORMULA='%s ~ .'\n"  % ( self.getClassColumnName(header)) )
-            f.write("RF_PRED_CLASS_NAME=\"%s\"\n" % ( self.getClassColumnName(header)) )
+            f.write("#RF_PRED_FORMULA='%s ~ .'\n"  % ( self.getClassColumnName(header)) )
+            f.write("#RF_PRED_CLASS_NAME=\"%s\"\n" % ( self.getClassColumnName(header)) )
+            f.write("# 1-based column index\n")
             f.write("RF_PRED_CLASS_IDX=%s\n"      % ( self.getClassColumnIdx(header) + 1 ) )
-            f.write("RF_PRED_CLASS_IDX_H2O=%s\n"  % ( self.getClassColumnIdx(header) ) )
             f.write("RF_R_MTRY=%d\n"              % ( mtry ) )
             f.write("RF_WEKA_MTRY=%d\n"           % ( mtry ) )
 
