@@ -1,5 +1,29 @@
 library(randomForest)
 
+# This code is copied from R -implementation
+"rfprint" <-
+function(x, ...) {
+  #cat("\nCall:\n", deparse(x$call), "\n")
+  cat("               Type of random forest: ", x$type, "\n", sep="")
+  cat("                     Number of trees: ", x$ntree, "\n",sep="")
+  cat("No. of variables tried at each split: ", x$mtry, "\n\n", sep="")
+  if(x$type == "classification") {
+    if(!is.null(x$confusion)) {
+      cat("        OOB estimate of  error rate: ",
+          round(x$err.rate[x$ntree, "OOB"]*100, digits=2), "%\n", sep="")
+      cat("Confusion matrix:\n")
+      print(x$confusion)
+      if(!is.null(x$test$err.rate)) {
+        cat("                Test set error rate: ",
+            round(x$test$err.rate[x$ntree, "Test"]*100, digits=2), "%\n",
+            sep="")
+        cat("Confusion matrix:\n")
+        print(x$test$confusion)
+      }
+    }
+  }
+}
+ 
 getTreeDepth <- function(tree, idx) {
     node <- tree[idx,]
     if (node$status == -1)
@@ -41,8 +65,8 @@ starttime<-Sys.time()
 train.ds.rf <- do.call(randomForest,params)
 endtime<-Sys.time()
 
-print(train.ds.rf)
-train.ds.oob <- mean(train.ds.rf$confusion)
+rfprint(train.ds.rf)
+train.ds.oob <- mean(train.ds.rf$err.rate[,"OOB"])
 cat("\nSize of train dataset: ", nrow(train.ds))
 
 cat("\n======== Test data ========\n\n")
