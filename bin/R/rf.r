@@ -44,10 +44,13 @@ sink(file=rf.output.analysis)
 train.ds <- read.table(rf.train.dsf, header=TRUE,sep=",")
 test.ds  <- read.table(rf.test.dsf, header=TRUE,sep=",")
 
+train.numcol <- ncol(train.ds)
+train.cols   <- setdiff(c(1:train.numcol), c(rf.pred.class.idx))
+train.col.with.class <- c(rf.pred.class.idx)
 cat("\n======== Train data ========\n")
 set.seed(rf.seed)
-params <- list(formula=rf.pred.formula,
-                data=train.ds, 
+params <- list(x=train.ds[,train.cols],
+               y=train.ds[,train.col.with.class],
                 importance=TRUE,
                 ntree=rf.ntrees,
                 replace=FALSE,
@@ -66,6 +69,8 @@ train.ds.rf <- do.call(randomForest,params)
 endtime<-Sys.time()
 
 rfprint(train.ds.rf)
+# NOTE: To see randomForest function call please uncomment following line:
+#print(train.ds.rf)
 train.ds.oob <- mean(train.ds.rf$err.rate[,"OOB"])
 cat("\nSize of train dataset: ", nrow(train.ds))
 
@@ -75,7 +80,7 @@ test.ds.pred <- predict(train.ds.rf, newdata=test.ds)
 #d<-as.dendrogram(tree)
 
 # Get comparison table
-t <- table(observed=test.ds[,rf.pred.class.name], predict=test.ds.pred)
+t <- table(observed=test.ds[,train.col.with.class], predict=test.ds.pred)
 
 # Compute classification error
 tsum<-apply(t, 1, sum)
