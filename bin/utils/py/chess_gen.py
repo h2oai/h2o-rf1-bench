@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import ssdgen
+import random
+import ggen
 
 DEFAULT_NROWS=8
 DEFAULT_NCOLS=8
@@ -27,8 +29,16 @@ class ChessGen(ssdgen.SSDGen):
 
     def genHeader(self):
         return ('x','y','color')
+    
+    def generate(self):
+        output = self.genPoints(self._total)
+        random.shuffle(output)
+        trainDS = output[:self._trainSize]
+        testDS  = output[self._trainSize:]
 
-    def genPoints(self):
+        self._writeDatasets(trainDS, testDS)
+
+    def genPoints(self, cnt):
         output = []
         for row in range(0, self._nrows):
             for col in range (0, self._ncols):
@@ -42,21 +52,8 @@ class ChessGen(ssdgen.SSDGen):
     def _genPoint(self, x, y, color):
          return (x+self._rand.random(),y+self._rand.random(), color)
 
-    def genGraph(self, f, train_ds_fname, test_ds_fname):
-        f.write('''
-train<-read.table("%s", sep=",", header=T)
-
-pdf('train.pdf')
-
-plot(train$x, train$y, col=train$color)
-box()
-dev.off()
-
-pdf('test.pdf')
-test<-read.table("%s", sep=",", header=T)
-plot(test$x, test$y, col=test$color)
-box()
-dev.off()''' % (train_ds_fname, test_ds_fname) )
+    def genGraph(self, f, ds_fname):
+        f.write(ggen.getSimpleRGraph(ds_fname))
 
     @classmethod
     def getArgParser(clazz, description):
