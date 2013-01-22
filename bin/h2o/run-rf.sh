@@ -39,6 +39,8 @@ RF_PARAMS="-mainClass hex.rf.RandomForest -file=$RF_TRAIN_DS -validationFile=$RF
 
 echo "H2O cmd parameters: $RF_PARAMS" | tee -a "$RF_OUTPUT_RUNCONFG"
 echo "JVM cmd parameters: $JVM_PARAMS"| tee -a "$RF_OUTPUT_RUNCONFG"
+echo "Assertion are     : $(if [ "$RF_H2O_JVM_ASSERTIONS" == "-ea" ]; then echo ENABLED; else echo DISABLED; fi )" | tee -a "$RF_OUTPUT_RUNCONFG"
+echo
 echo -e "Cmd line:\njava $JVM_PARAMS $RF_PARAMS" | tee -a "$RF_OUTPUT_RUNCONFG"
 
 #Q=echo
