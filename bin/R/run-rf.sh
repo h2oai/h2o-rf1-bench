@@ -31,10 +31,10 @@ print_conf
 # R-specific part
 #
 RF_SEED=42
-
+RF_R_MTRY=$RF_MTRY
 
 START_TIME=$(date +%s)
-R -q --no-save <<EOF
+R --slave --no-save <<EOF
 rf.ds.name   <- "$RF_DS_NAME"
 ${RF_R_SEED:+"rf.seed      <- $RF_R_SEED"}
 rf.train.dsf <- "$RF_TRAIN_DS"
