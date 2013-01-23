@@ -23,7 +23,12 @@ function(x, ...) {
     }
   }
 }
- 
+
+tslog<-
+function(m) {
+  cat(sprintf("[%s] %s\n", Sys.time(), m))
+} 
+
 getTreeDepth <- function(tree, idx) {
     node <- tree[idx,]
     if (node$status == -1)
@@ -38,16 +43,22 @@ getTreeDepth <- function(tree, idx) {
         return (rd+1)
 }
 
-sink(file=rf.output.analysis)
+sink(file=rf.output.analysis, split=TRUE)
 
-# Load datasets
+# Configure time precision
+options(digits.secs=4)
+
+cat("\n======== Train data ========\n")
+# Load train dataset
+tslog("Train datasets loading....")
 train.ds <- read.table(rf.train.dsf, header=TRUE,sep=",")
-test.ds  <- read.table(rf.test.dsf, header=TRUE,sep=",")
+train.ds <- na.omit(train.ds)
+tslog("...FINISHED")
 
 train.numcol <- ncol(train.ds)
 train.cols   <- setdiff(c(1:train.numcol), c(rf.pred.class.idx))
 train.col.with.class <- c(rf.pred.class.idx)
-cat("\n======== Train data ========\n")
+
 set.seed(rf.seed)
 params <- list(x=train.ds[,train.cols],
                y=train.ds[,train.col.with.class],
@@ -64,17 +75,34 @@ if (exists('rf.sampling.ratio')) {
     params <- c(params, sampsize=sr)
 }
 
-starttime<-Sys.time()
+tslog("Calling random forest...")
+sstarttime<-Sys.time()
+starttime<-proc.time()
 train.ds.rf <- do.call(randomForest,params)
-endtime<-Sys.time()
+endtime<-proc.time()
+sendtime<-Sys.time()
+tslog("...FINISHED")
 
 rfprint(train.ds.rf)
 # NOTE: To see randomForest function call please uncomment following line:
 #print(train.ds.rf)
 train.ds.oob <- mean(train.ds.rf$err.rate[,"OOB"])
 cat("\nSize of train dataset: ", nrow(train.ds))
+cat("\n       Start/End time: ", sprintf("%s", sstarttime), " / ", sprintf("%s", sendtime))
+cat("\n             Run time: \n")
+endtime-starttime
 
-cat("\n======== Test data ========\n\n")
+cat("\n\n======== Test data ========\n\n")
+# Load train dataset
+tslog("Test datasets loading....")
+test.ds  <- read.table(rf.test.dsf, header=TRUE,sep=",")
+test.ds  <- na.omit(test.ds)
+tslog("...FINISHED")
+
+
+tslog("Validation...")
+sstarttime<-Sys.time()
+starttime<-proc.time()
 test.ds.pred <- predict(train.ds.rf, newdata=test.ds)
 #tree<-getTree(iris.rf,1)
 #d<-as.dendrogram(tree)
@@ -90,17 +118,23 @@ class.error <- tesum/tsum
 observations <- sum(tsum)
 errors       <- sum(tesum)
 overall.class.err <- errors / observations
+endtime<-proc.time()
+sendtime<-Sys.time()
+tslog("...FINISHED")
 
 cat("Classification error (err / observations): ", overall.class.err*100, "% \n")
 cat("                Total number of instances: ", observations, "\n")
 cat("           Correctly classified instances: ", observations-errors, "\n")
 cat("         Incorrectly classified instances: ", errors, "\n")
-cat("                     Size of test dataset: ", nrow(test.ds), "\n\n")
+cat("                     Size of test dataset: ", nrow(test.ds), "\n")
+cat("                           Start/End time: ", sprintf("%s",sstarttime), " / ", sprintf("%s",sendtime), "\n")
+cat("                                 Run time: \n")
+endtime-starttime
+
 # Append classification error to original table
-cat("Confusion matrix:\n")
+cat("\nConfusion matrix:\n")
 cbind(t,class.error)
 
-cat(sprintf("\n\nRun time: %.5f sec\n\n", endtime - starttime))
 #pt = prop.table(t,1)
 #print(pt)
 
@@ -119,7 +153,6 @@ cat("\n")
 #cat(sprintf(" Nodes summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(nodes), mean(nodes),  max(nodes)))
 cat(sprintf("Depths summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(depths), mean(depths), max(depths)))
 cat(sprintf("Leaves summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(leaves), mean(leaves), max(leaves))) 
-cat(sprintf("Run time: %.5f sec\n", endtime - starttime))
 
 result <- c(rf.ntrees, rf.r.mtry, min(leaves), mean(leaves), max(leaves), min(depths), mean(depths), max(depths), nrow(train.ds), train.ds.oob, nrow(test.ds), overall.class.err)
 
@@ -135,10 +168,4 @@ if (rf.print.trees) {
         print(t)
     }
 }
-
-
-#png(paste(".", formatC(i, digits=3, flag="0"), ".jpg", sep=""))
-#plot(t, col="gray"); 
-#text(t, cex=.8)
-#dev.off()
 
