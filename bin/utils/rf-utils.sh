@@ -117,6 +117,9 @@ RF configuration:
 
    All RF variables:
 $(set -o posix; set | grep "^RF_" | sed -e "s/^/        /")
+
+   Dataset configuration:
+$(cat  "$RF_DS_CONF" | sed -e "s/^/       /" )
 ========================================================
 EOF
 cat "$RF_OUTPUT_RUNCONFG"

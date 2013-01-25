@@ -32,9 +32,15 @@ print_conf
 #
 RF_SEED=42
 RF_R_MTRY=$RF_MTRY
+if [ -z "${RF_COLUMN_IGNORES}" ]; then 
+  RF_R_COLUMN_IGNORES="c()"
+else 
+  RF_R_COLUMN_IGNORES="c($RF_COLUMN_IGNORES)+1"; 
+fi
 
 START_TIME=$(date +%s)
-R --slave --no-save <<EOF
+#R --slave --no-save <<EOF
+cat > runner.r <<EOF
 rf.ds.name   <- "$RF_DS_NAME"
 ${RF_R_SEED:+"rf.seed      <- $RF_R_SEED"}
 rf.train.dsf <- "$RF_TRAIN_DS"
@@ -46,9 +52,11 @@ rf.output.analysis <- "$RF_OUTPUT_ANALYSIS"
 rf.output.trees    <- "$RF_OUTPUT_TREES"
 rf.r.mtry          <- $RF_R_MTRY
 rf.print.trees     <- $RF_PRINT_TREES
+rf.column.ignores  <- $RF_R_COLUMN_IGNORES
 ${RF_SAMPLING_RATIO:+"rf.sampling.ratio  <- $RF_SAMPLING_RATIO"}
 $(cat rf.r)
 EOF
+R --slave --no-save < runner.r
 END_TIME=$(date +%s)
 
 if [ $RF_PRINT_TREES == "TRUE" ]; then

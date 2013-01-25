@@ -57,7 +57,11 @@ tslog("...FINISHED")
 
 train.numcol <- ncol(train.ds)
 train.cols   <- setdiff(c(1:train.numcol), c(rf.pred.class.idx))
+train.cols   <- setdiff(train.cols, rf.column.ignores)
 train.col.with.class <- c(rf.pred.class.idx)
+cat("X= ", train.cols, "\n")
+cat("Y= ", train.col.with.class, "\n")
+cat("Ignores: ",rf.column.ignores , "\n")
 
 set.seed(rf.seed)
 params <- list(x=train.ds[,train.cols],
@@ -92,6 +96,9 @@ cat("\n       Start/End time: ", sprintf("%s", sstarttime), " / ", sprintf("%s",
 cat("\n             Run time: \n")
 endtime-starttime
 
+tslog("Saving RF model...")
+save(train.ds.rf, file='rfmodel-ds.data')
+tslog("...FINISHED")
 cat("\n\n======== Test data ========\n\n")
 # Load train dataset
 tslog("Test datasets loading....")
@@ -99,13 +106,12 @@ test.ds  <- read.table(rf.test.dsf, header=TRUE,sep=",")
 test.ds  <- na.omit(test.ds)
 tslog("...FINISHED")
 
-
 tslog("Validation...")
 sstarttime<-Sys.time()
 starttime<-proc.time()
-test.ds.pred <- predict(train.ds.rf, newdata=test.ds)
-#tree<-getTree(iris.rf,1)
-#d<-as.dendrogram(tree)
+test.cols <- train.cols
+cat("X= ", test.cols, "\n")
+test.ds.pred <- predict(train.ds.rf, newdata=test.ds[,test.cols])
 
 # Get comparison table
 t <- table(observed=test.ds[,train.col.with.class], predict=test.ds.pred)
