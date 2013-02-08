@@ -1,4 +1,19 @@
+rf.ds.name   <- "covtype"
+rf.seed      <- 1235098019
+rf.train.dsf <- "/home/bench/prg/h2o-bench/datasets/covtype/R/train.csv"
+rf.test.dsf  <- "/home/bench/prg/h2o-bench/datasets/covtype/R/test.csv"
+rf.pred.class.idx  <- 55
+
+rf.ntrees          <- XXXTREEXXX
+rf.r.mtry          <- 7
+rf.sampling.ratio  <- XXXSAMPLEXXX
+rf.column.ignores  <- c(2,3,7,8,9)
+
+rf.output.analysis <- "/home/bench/tmp/runs/R-covtype-analysis-XXXTREEXXXtree-XXXSAMPLEXXXsampling.txt"
+
 library(randomForest)
+#library(party)
+
 
 # This code is copied from R -implementation
 "rfprint" <-
@@ -140,38 +155,4 @@ endtime-starttime
 # Append classification error to original table
 cat("\nConfusion matrix:\n")
 cbind(t,class.error)
-
-#pt = prop.table(t,1)
-#print(pt)
-
-## print(iris.rf$err.rate)
-#print(iris.rf$votes)
-# Print all trees
-depths <- c()
-for(i in 1:rf.ntrees) {
-    t <- getTree(train.ds.rf,i,labelVar=TRUE)
-    depths <- append(depths, getTreeDepth(t,1))
-}
-leaves=treesize(train.ds.rf,terminal=TRUE)
-nodes=treesize(train.ds.rf,terminal=FALSE)
-
-cat("\n")
-#cat(sprintf(" Nodes summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(nodes), mean(nodes),  max(nodes)))
-cat(sprintf("Depths summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(depths), mean(depths), max(depths)))
-cat(sprintf("Leaves summary (Min/Mean/Max): %.1f / %.1f / %.1f\n", min(leaves), mean(leaves), max(leaves))) 
-
-result <- c(rf.ntrees, rf.r.mtry, min(leaves), mean(leaves), max(leaves), min(depths), mean(depths), max(depths), nrow(train.ds), train.ds.oob, nrow(test.ds), overall.class.err)
-
-cat(result,sep=',')
-cat("\n")
-
-# print trees to a separated file
-if (rf.print.trees) {
-    sink(file=rf.output.trees)
-    # Print all trees
-    for(i in 1:rf.ntrees) {
-        t <- getTree(train.ds.rf,i,labelVar=TRUE)
-        print(t)
-    }
-}
 

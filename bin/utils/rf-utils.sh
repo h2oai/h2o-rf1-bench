@@ -31,6 +31,14 @@ function check_datasets() {
         list_datasets "$RF_DSS_DIR"
         exit -1
     fi
+    if [ -z "$RF_MTRY" ]; then
+       echo "Property RF_MTRY has to be explicitely specified in rf.conf for dataset $(dirname $RF_TRAIN_DS) !"
+       exit -1
+    fi
+    if [ -z "$RF_PRED_CLASS_IDX" ]; then
+       echo "Property RF_PRED_CLASS_IDX has to be explicitely specified in rf.conf for dataset $(dirname $RF_TRAIN_DS) !"
+       exit -1
+    fi
 }
 
 function parse_conf() {
@@ -109,6 +117,9 @@ RF configuration:
 
    All RF variables:
 $(set -o posix; set | grep "^RF_" | sed -e "s/^/        /")
+
+   Dataset configuration:
+$(cat  "$RF_DS_CONF" | sed -e "s/^/       /" )
 ========================================================
 EOF
 cat "$RF_OUTPUT_RUNCONFG"
