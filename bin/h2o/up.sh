@@ -4,8 +4,8 @@
 # @Revision:    0.0
 set -e
 
-H2O_HOME=/home/michal/prg/projects/h20/repos/h2o-at-bitbucker
-H2OJAR=$H2O_HOME/build/h2o.jar
+H2O_HOME=/home/michal/prg/projects/h20/repos/NEW.h2o.github/
+H2OJAR=$H2O_HOME/target/h2o.jar
 echo "Building H2O in ${H2O_HOME}..."
 if [ "$1" == "skipgit" ]; then
 echo "Skipping git pull..."
