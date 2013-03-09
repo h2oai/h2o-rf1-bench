@@ -22,14 +22,18 @@ EOF
 
 
 tail -n +2 $DATASET | shuf > $TMPF
-cat > "train-$DATASET" <<EOF
+cat > "train.csv" <<EOF
 $HEADER
 $(head -n $NL_TRAIN $TMPF)
 EOF
 #echo 'cat $TMF | tail -n $NL_TEST  > "test-$DATASET"'
-cat > "test-$DATASET" <<EOF
+cat > "test.csv" <<EOF
 $HEADER
 $(tail -n $NL_TEST $TMPF)
+EOF
+
+cat > "header" <<EOF
+$HEADER
 EOF
 
 rm $TMPF
