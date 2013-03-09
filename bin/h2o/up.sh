@@ -9,9 +9,9 @@ H2OJAR=$H2O_HOME/target/h2o.jar
 echo "Building H2O in ${H2O_HOME}..."
 if [ "$1" == "skipgit" ]; then
 echo "Skipping git pull..."
-( cd "$H2O_HOME"; ./build.sh build )
+( cd "$H2O_HOME"; /bin/bash ./build.sh build )
 else
-( cd "$H2O_HOME"; git pull && ./build.sh build )
+( cd "$H2O_HOME"; git pull && /bin/bash ./build.sh build )
 fi
 
 echo "Doing: cp $H2OJAR ."
