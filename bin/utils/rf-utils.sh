@@ -126,7 +126,7 @@ cat "$RF_OUTPUT_RUNCONFG"
 }
 
 function print_header() {
-local HEADER="Trees,Features,LeavesMin,LeavesMean,LeavesMax,DepthMin,DepthMean,DepthMax,TrainSize,OOB,TestSize,ClassError"
+local HEADER="Trees,Features,Sample,BinLimit,LeavesMin,LeavesMean,LeavesMax,DepthMin,DepthMean,DepthMax,TrainSize,OOB,TestSize,ClassError,TrainTime,TestTime"
 echo $HEADER
 }
 
@@ -150,6 +150,12 @@ function h2o_get_run_stats() {
 
     train_size=$(tail -n 100 "$f" | grep "Validated on" | head -n 1 | sed -e "s/[^:]*: \([0-9]*\)$/\1/")
     test_size=$(tail -n 100 "$f" | grep "Validated on" | tail -n 1 | sed -e "s/[^:]*: \([0-9]*\)$/\1/")
+
+    sample=$(grep "\-sample" "$f"| head -n 1 | sed -e "s/.*-sample=\([0-9]*\) .*/\1/" )
+    binlimit=$(grep "\-binLimit" "$f"| head -n 1 | sed -e "s/.*-binLimit=\([0-9]*\) .*/\1/" )
+
+    traintime=$(grep "Random forest finished" "$f" | sed -e "s/.* Random forest finished in \([^ ]*\) .*/\1/")
+    testtime=$(grep "Validation done in" "$f" | sed -e "s/.* Validation done in: \([^ ]*\) .*/\1/")
 #    echo "ntrees=$ntrees"
 #    echo "mtry=$mtry"
 #    echo "oobee=$oobee"
@@ -158,5 +164,5 @@ function h2o_get_run_stats() {
 #    echo "depth_stats=$depth_stats"
 #    echo "train_size=$train_size"
 #    echo "test_size=$test_size"
-    echo "$ntrees,$mtry,$tree_stats,$depth_stats,$train_size,$oobee,$test_size,$classerr"
+    echo "$ntrees,$mtry,$sample,$binlimit,$tree_stats,$depth_stats,$train_size,$oobee,$test_size,$classerr,$traintime,$testtime"
 }
