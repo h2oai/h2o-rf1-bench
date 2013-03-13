@@ -69,7 +69,8 @@ def experiment(train_file, test_file, predictor, ntrees, mtry, sample, parser_he
 Train time: {0}
  Test time: {1}
  Err. rate: {2} %
-{0},{1},{2}""".format(timeTrainRF, timeTestRF, 100*(1-testScore))
+Trees,Sample,Mtry,TrainTime,TestTime,OOB,ClassErr
+{3},NA,NA,{0},{1},NA,{4}""".format(timeTrainRF, timeTestRF, 100*(1-testScore),ntrees,1-testScore)
 
 
 if __name__ == '__main__':
