@@ -40,11 +40,42 @@ def main():
     test_file   = "{0}/{1}/test.csv".format(dataset_dir,WISE_IO_DIR)
 
     experiment(train_file, test_file, args.predictor, args.ntrees, args.mtry, args.sample, args.parser_header, args.cpu_cores )
+
+def getColMap(col):
+    values = col.unique()
+    colmap = {}
+    idx=1
+    for val in values: 
+        colmap[val] = idx
+        idx += 1
+
+    return colmap
+
+def mapColToInt(col, map=None):
+    if not map: map = getColMap(col)
+    return col.map(lambda x: map[x])
+
+def preprocessFrame(fr, map=None):
+    if not map:
+        map = {}
+        for col in fr:
+            if fr[col].dtype == 'O': # it is dtype('object')
+                colmap = getColMap(fr[col])
+                map[col] = colmap
+
+    for col in fr:
+        if fr[col].dtype == 'O':
+            colmap = map[fr[col].name]
+            fr[col] = mapColToInt(fr[col],colmap)
+
+    return map
+
     
 def experiment(train_file, test_file, predictor, ntrees, mtry, sample, parser_header, cpu_cores):
     sample = sample / 100.0
     # Load train data
     trainDataX   = pandas.read_csv(train_file,header=0)
+    fmap = preprocessFrame(trainDataX)
     predictorCol = trainDataX.columns[predictor]
     trainDataY   = array(trainDataX.pop(predictorCol), dtype=str)
     trainDataX   = array(trainDataX)
@@ -56,6 +87,7 @@ def experiment(train_file, test_file, predictor, ntrees, mtry, sample, parser_he
             
     # Validation
     testDataX    = pandas.read_csv(test_file,header=0)
+    preprocessFrame(testDataX,fmap)
     predictorCol = testDataX.columns[predictor]
     testDataY    = array(testDataX.pop(predictorCol), dtype=str)
     testDataX    = array(testDataX)
