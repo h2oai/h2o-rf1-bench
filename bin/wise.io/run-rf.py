@@ -13,6 +13,7 @@ DEFAULT_NTREES = 100
 DEFAULT_MTRY   = -1
 DEFAULT_SAMPLE = 67
 DEFAULT_PARSER_HEADER = True
+DEFAULT_CPU_CORES=None
 DEFAULT_CPU_CORES=8
 
 DATASETS_DIR='../../datasets'
@@ -33,16 +34,23 @@ def main():
     # Tunning
     parser.add_argument('--parser_header', help="datasets contains header",type=bool,default=DEFAULT_PARSER_HEADER)
     parser.add_argument('--cpu_cores', help="number of CPU cores", type=int, default=DEFAULT_CPU_CORES)
+    parser.add_argument('--ignores', help="list of 1-based column indexes to ignore", type=str, default=None)
     args = parser.parse_args()
 
     dataset_dir = "{0}/{1}".format(DATASETS_DIR, args.dataset)
     train_file  = "{0}/{1}/train.csv".format(dataset_dir,WISE_IO_DIR)
     test_file   = "{0}/{1}/test.csv".format(dataset_dir,WISE_IO_DIR)
 
-    experiment(train_file, test_file, args.predictor, args.ntrees, args.mtry, args.sample, args.parser_header, args.cpu_cores )
+    if args.ignores: 
+        ignores = map(lambda x : int(x)-1, args.ignores.split(','))    
+    else:
+        ignores = None
+
+    experiment(train_file, test_file, args.predictor, args.ntrees, args.mtry, args.sample, ignores, args.parser_header, args.cpu_cores )
 
 def getColMap(col):
     values = col.unique()
+    values.sort()
     colmap = {}
     idx=1
     for val in values: 
@@ -70,30 +78,39 @@ def preprocessFrame(fr, map=None):
 
     return map
 
-    
-def experiment(train_file, test_file, predictor, ntrees, mtry, sample, parser_header, cpu_cores):
-    sample = sample / 100.0
+def popIgnores(ds, ignores):
+    if not ignores: return ds
+    icols = []
+    for icol in ignores:
+        icols.append( ds.columns[icol] )
+    print icols
+    for icol in icols:
+        ds.pop(icol)
+
+    return ds
+        
+def experiment(train_file, test_file, predictor, ntrees, mtry, sample, ignores, parser_header, cpu_cores):
     # Load train data
     trainDataX   = pandas.read_csv(train_file,header=0)
     fmap = preprocessFrame(trainDataX)
     predictorCol = trainDataX.columns[predictor]
-    trainDataY   = array(trainDataX.pop(predictorCol), dtype=str)
-    trainDataX   = array(trainDataX)
+    trainDataY   = array(trainDataX.pop(predictorCol))
+    trainDataX   = array(popIgnores(trainDataX,ignores))
 
     timeTrainRF = time()
     rf          = WiseRF(n_estimators=ntrees, n_jobs=cpu_cores)
-    rf.fit(trainDataX, trainDataY, debug=True)
+    rf.fit(trainDataX, trainDataY)
     timeTrainRF = time() - timeTrainRF
             
     # Validation
     testDataX    = pandas.read_csv(test_file,header=0)
     preprocessFrame(testDataX,fmap)
     predictorCol = testDataX.columns[predictor]
-    testDataY    = array(testDataX.pop(predictorCol), dtype=str)
-    testDataX    = array(testDataX)
+    testDataY    = array(testDataX.pop(predictorCol))
+    testDataX    = array(popIgnores(testDataX,ignores))
 
     timeTestRF = time()
-    predict    = rf.predict(array(testDataX))
+    predict    = rf.predict(testDataX)
     print predict
     testScore  = rf.score(testDataX,testDataY)
     timeTestRF = time() - timeTestRF
